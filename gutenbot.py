@@ -187,7 +187,9 @@ async def title_search(ctx, *args):
                 for j in range(1+endOffset-startOffset):
                     await ctx.channel.send(etextTable[i+startOffset+j])
                 await ctx.channel.send("? (respond y for yes, q for quit, or anything else for no)")
-                ans = await bot.wait_for("message")
+                def check(m):
+                    return m.author == ctx.author
+                ans = await bot.wait_for("message", check=check)
                 ans = ans.content
                 if ans == 'y':
                     bot.ETEXT_NUMBER = (int) (searchLine[1])
