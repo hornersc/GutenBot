@@ -40,7 +40,7 @@ async def begin(ctx, length):
             msg = "Length must be between 0 and 30"
     else:
         msg = "Use !searchTitle or !setNum to choose a text"
-    await ctx.channel.send(msg)
+    await ctx.channel.send("`"+ msg + "`")
 
 @bot.command(name="addNote", help="Adds a given selection from the last search to notes")
 async def addNote(ctx, *args):
@@ -79,7 +79,7 @@ async def showNotes(ctx):
             RESULTS_NUM = note[3]
             ANNOTATIONS = note[4]
 
-            seperator = 20 * '-'
+            seperator = "`" + 20 * '=' + "`"
             text = strip_headers(load_etext(ETEXT_NUMBER)).strip()
             text = text.splitlines()
             wordsFound = 0
@@ -93,7 +93,7 @@ async def showNotes(ctx):
                 if SELECT_WORD in lowerLine:
                     wordsFound += 1
                     if wordsFound == RESULTS_NUM:
-                        msg += ("Number |" + str(num + 1) + "|" + "----eText no. |" + str(ETEXT_NUMBER) + "|\n")
+                        head = ("\n**[" + str(num + 1) + "]" + "====eText no. [" + str(ETEXT_NUMBER) + "]**\n```")
                         start = lowerLine.find(SELECT_WORD)
                         end = start + len(SELECT_WORD)
                         text[i] = text[i][:start] + "[" + SELECT_WORD + "]" + text[i][end:]
@@ -101,8 +101,8 @@ async def showNotes(ctx):
                             toPrint = text[i+j-OFFSET]
                             if not toPrint.isspace():
                                 msg += (toPrint + "\n")
-                        msg += seperator + "\nAnnotations: " + ANNOTATIONS + "\n"
-                        await ctx.channel.send(msg + seperator + "\n\n")
+                        msg += "```" + seperator + "\nAnnotations: " + ANNOTATIONS + "\n"
+                        await ctx.channel.send(head + msg + seperator + "\n\n")
                         msg = ""
     else:
         await ctx.channel.send("There are no notes.")
@@ -206,7 +206,7 @@ async def title_search(ctx, *args):
 
 
 @bot.command(name="searchBody", help="Finds quotes in body from projectgutenberg.org")
-async def title_search(ctx, *args):
+async def body_search(ctx, *args):
     SELECT_WORD = (" ".join(args[:]))
     msg = ""
     OFFSET = int(bot.LINE_WIDTH / 2)
@@ -222,7 +222,6 @@ async def title_search(ctx, *args):
 
         if not EXIT_CONTENT_SEARCH:
             bot.LAST_SEARCH = SELECT_WORD
-            seperator = 20 * '-'
             text = strip_headers(load_etext(bot.ETEXT_NUMBER)).strip()
             text = text.splitlines()
 
@@ -233,7 +232,7 @@ async def title_search(ctx, *args):
                 if SELECT_WORD in lowerLine and wordsFound < bot.RESULTS_MAX:
                     WORD_FOUND = True
                     wordsFound += 1
-                    msg += ("Number |" + str(wordsFound) + "|" + "----Line |" + str(i) + "|\n")
+                    head = ("\n**[" + str(wordsFound) + "]" + "====Line [" + str(i) + "]**\n```")
                     start = lowerLine.find(SELECT_WORD)
                     end = start + len(SELECT_WORD)
                     text[i] = text[i][:start] + "[" + SELECT_WORD + "]" + text[i][end:]
@@ -241,7 +240,7 @@ async def title_search(ctx, *args):
                         toPrint = text[i+j-OFFSET]
                         if not toPrint.isspace():
                             msg += (toPrint + "\n")
-                    await ctx.channel.send(msg + seperator + "\n\n")
+                    await ctx.channel.send(head + msg + "```\n\n")
                     msg = ""
 
             if not WORD_FOUND:
